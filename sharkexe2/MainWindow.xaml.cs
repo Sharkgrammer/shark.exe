@@ -32,7 +32,10 @@ namespace sharkexe2
         private Boolean sImgPause = false;
         private int sDir = 0;
         private int sMode = 2;
-        private int sRotation = 0;
+
+        private int sRotationSpeed = 5;
+        private double sToRotation = 0;
+        private double sRotation = 0;
 
         private double sSpeedX = 1;
         private double sSpeedY = 1;
@@ -44,8 +47,8 @@ namespace sharkexe2
         private int sNearness = 5;
         private int sAccerlationNearness = 30;
 
-        private int CursorOffsetX = 105;
-        private int CursorOffsetY = 25;
+        private int CursorOffsetX = 85;
+        private int CursorOffsetY = 50;
 
         //Other functions
         private Boolean followMouse = true;
@@ -57,13 +60,6 @@ namespace sharkexe2
         {
             InitializeComponent();
 
-
-            /*
-            System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Tick += new EventHandler(timer_tick);
-            timer.Interval = new TimeSpan(0, 0, 0, 0, sTickSpeed);
-            timer.Start();*/
-
             aTimer = new System.Timers.Timer(sTickSpeed);
             aTimer.Elapsed += timer_tick;
             aTimer.AutoReset = true;
@@ -74,13 +70,6 @@ namespace sharkexe2
         {
             var cursorPoint = System.Windows.Forms.Cursor.Position;
             return new Point(cursorPoint.X - CursorOffsetX, cursorPoint.Y - CursorOffsetY);
-        }
-
-        private Point towardsMousePoint()
-        {
-            moveShark(getCursorPoint());
-
-            return new Point(sx, sy);
         }
 
         private void setImage()
@@ -106,24 +95,10 @@ namespace sharkexe2
 
                 imgMain.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/" + sDir.ToString() + sMode.ToString() + ".png"));
 
-                /*RotateTransform rotateTransform1 = new RotateTransform(sRotation);
-                imgBorder.RenderTransform = rotateTransform1;
 
-                TranslateTransform trans = new TranslateTransform(-10, -10);
-                imgMain.RenderTransform = trans;
-
-                Point position = imgMain.PointToScreen(new Point(0d, 0d));
-
-                Console.WriteLine("X:" + position.X + " Y:" + position.Y);
-
-                if (sRotation >= 360)
-                {
-                    sRotation = 0;
-                }
-                else
-                {
-                    sRotation += 90;
-                }*/
+                RotateTransform rotateTransform1 = new RotateTransform(sRotation);
+                imgMain.RenderTransformOrigin = new Point(0.5, 0.5);
+                imgMain.RenderTransform = rotateTransform1;
             }
             else
             {
@@ -144,22 +119,21 @@ namespace sharkexe2
             switch (sDir)
             {
                 case 0:
-                    CursorOffsetX = 105;
-                    CursorOffsetY = 25;
+                    CursorOffsetX = 85;
+                    CursorOffsetY = 50;
                     break;
                 case 4:
                     CursorOffsetX = 10;
-                    CursorOffsetY = 25;
+                    CursorOffsetY = 50;
                     break;
             }
         }
 
         private void moveShark(Point to)
         {
-
             pointAccerlationCalc(to);
 
-            //sImgPause = nearByTarget(to);
+            sImgPause = nearByTarget(to);
 
             if (!nearByTargetX(to))
             {
@@ -225,9 +199,47 @@ namespace sharkexe2
 
         }
 
-        private Boolean atTarget(Point to)
+        private void faceTarget(Point to)
         {
-            return to == new Point(sx, sy);
+
+            if (nearByTarget(to))
+            {
+                return;
+            }
+
+            double x = to.X - sx;
+            double y = to.Y - sy;
+
+            sToRotation = Math.Atan(y/x) * 180 / Math.PI;
+
+            if (sRotation < sToRotation)
+            {
+                sRotation += getRotationSpeed();
+            }
+            else if (sRotation > sToRotation)
+            {
+                sRotation -= getRotationSpeed();
+            }
+
+            Console.WriteLine(sRotation + ":" + sToRotation);
+
+            //Console.WriteLine("Angle:" + test);
+            // Console.WriteLine("SX:" + sx + " SY:" + sy);
+            // Console.WriteLine("CX:" + to.X + " CY:" + to.Y);
+        }
+
+        private double getRotationSpeed()
+        {
+            double rotTest = Math.Abs(sRotation) - Math.Abs(sToRotation);
+
+            if (Math.Abs(rotTest) < sRotationSpeed)
+            {
+                return sRotationSpeed - Math.Abs(rotTest);
+            }
+            else
+            {
+                return sRotationSpeed;
+            }
         }
 
         private Boolean nearByTarget(Point to, Boolean accNear = false)
@@ -247,7 +259,6 @@ namespace sharkexe2
             }
         }
 
-
         private Boolean nearByTargetY(Point t, Boolean accNear = false)
         {
             if (accNear)
@@ -266,23 +277,33 @@ namespace sharkexe2
 
             if (!followMouse)
             {
-                if (sy < SystemInformation.VirtualScreen.Height - this.Height)
-                {
-                    sy += (int)sSpeedY;
-                }
-
-                if (sx < SystemInformation.VirtualScreen.Width - this.Width)
-                {
-                    sx += (int)sSpeedX;
-                }
-
+                spinShark();
             }
             else
             {
-                towardsMousePoint();
+                moveTowardsMousePoint();
             }
 
             Dispatcher.BeginInvoke(new Action(updateFormLocation));
+        }
+
+        private void spinShark()
+        {
+            if (Math.Abs(sRotation) >= 360)
+            {
+                sRotation = 0;
+            }
+            else
+            {
+                sRotation += 30;
+            }
+        }
+
+        private void moveTowardsMousePoint()
+        {
+            Point cursor = getCursorPoint();
+            faceTarget(cursor);
+            moveShark(cursor);
         }
 
         private void updateFormLocation()

@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:sharkexe2"
         mc:Ignorable="d" 
-        Title="MainWindow" Height="60" Width="100" Left="0" Top="0"  AllowsTransparency="True" WindowStyle="None" Background="Transparent">
-    
-        <Image x:Name="imgMain" Height="60" Width="100" VerticalAlignment="Top"/>
+        Title="MainWindow" Left="0" Top="0" Height="100" Width="100"  AllowsTransparency="True" WindowStyle="None" Background="Transparent">
+
+    <Grid x:Name="imgGrid">
+        <Image x:Name="imgMain" Width="100" VerticalAlignment="Center"/>
+    </Grid>
     
 </Window>
