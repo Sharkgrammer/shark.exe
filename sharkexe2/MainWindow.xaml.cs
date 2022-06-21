@@ -33,16 +33,18 @@ namespace sharkexe2
         private int sDir = 0;
         private int sMode = 2;
 
-        private int sRotationSpeed = 5;
+        private int sRotationSpeed = 1;
         private double sToRotation = 0;
         private double sRotation = 0;
+        private Boolean isRotating = true;
 
         private double sSpeedX = 1;
         private double sSpeedY = 1;
         private int sTopSpeed = 5;
+        private int sTopSpeedStraight = 10;
         private int sStartSpeed = 1;
-        private double sAccerlation = 0.5;
-        private double sDecerlation = 1;
+        private double sAccerlation = 0.3;
+        private double sDecerlation = 0.8;
 
         private int sNearness = 5;
         private int sAccerlationNearness = 30;
@@ -52,7 +54,6 @@ namespace sharkexe2
 
         //Other functions
         private Boolean followMouse = true;
-
 
         private static System.Timers.Timer aTimer;
 
@@ -114,7 +115,10 @@ namespace sharkexe2
             }
 
             sDir = val;
-            sImgSkip = true;
+            if ((sToRotation < 0 && sRotation > 0) || (sToRotation > 0 && sRotation < 0))
+            {
+                sRotation *= -1;
+            }
 
             switch (sDir)
             {
@@ -133,19 +137,21 @@ namespace sharkexe2
         {
             pointAccerlationCalc(to);
 
-            sImgPause = nearByTarget(to);
+            sImgPause = nearByTarget(to, false, 5);
 
             if (!nearByTargetX(to))
             {
+                Boolean nearByTargetAccDist = nearByTargetX(to, true, 10);
+
                 if (sx > to.X)
                 {
                     sx -= (int)sSpeedX;
-                    setSDir(4);
+                    if (!nearByTargetAccDist) setSDir(4);
                 }
-                else
+                else if (sx < to.X)
                 {
                     sx += (int)sSpeedX;
-                    setSDir(0);
+                    if (!nearByTargetAccDist) setSDir(0);
                 }
             }
 
@@ -175,7 +181,7 @@ namespace sharkexe2
             }
             else
             {
-                if (sSpeedX < sTopSpeed)
+                if (sSpeedX < sTopSpeed || (!isRotating && sSpeedX < sTopSpeedStraight))
                 {
                     sSpeedX += sAccerlation;
                 }
@@ -191,9 +197,25 @@ namespace sharkexe2
             }
             else
             {
-                if (sSpeedY < sTopSpeed)
+                if(sSpeedY < sTopSpeed || (!isRotating && sSpeedY < sTopSpeedStraight))
                 {
                     sSpeedY += sAccerlation;
+                }
+
+            }
+
+            // Check if rotating & it its above sTopSpeed for larger decerlation?
+
+            if (isRotating)
+            {
+                if (sSpeedY > sTopSpeed)
+                {
+                    sSpeedY -= sDecerlation;
+                }
+
+                if (sSpeedX > sTopSpeed)
+                {
+                    sSpeedX -= sDecerlation;
                 }
             }
 
@@ -202,7 +224,7 @@ namespace sharkexe2
         private void faceTarget(Point to)
         {
 
-            if (nearByTarget(to))
+            if (nearByTarget(to, true))
             {
                 return;
             }
@@ -220,54 +242,54 @@ namespace sharkexe2
             {
                 sRotation -= getRotationSpeed();
             }
-
-            Console.WriteLine(sRotation + ":" + sToRotation);
-
-            //Console.WriteLine("Angle:" + test);
-            // Console.WriteLine("SX:" + sx + " SY:" + sy);
-            // Console.WriteLine("CX:" + to.X + " CY:" + to.Y);
         }
 
         private double getRotationSpeed()
         {
+            isRotating = true;
             double rotTest = Math.Abs(sRotation) - Math.Abs(sToRotation);
+            double tempRotSpeed = sRotationSpeed;
 
             if (Math.Abs(rotTest) < sRotationSpeed)
             {
-                return sRotationSpeed - Math.Abs(rotTest);
+                tempRotSpeed = sRotationSpeed - Math.Abs(rotTest);
+
+                if (tempRotSpeed <= 1)
+                {
+                    isRotating = false;
+                    tempRotSpeed = 0;
+                }
             }
-            else
-            {
-                return sRotationSpeed;
-            }
+
+            return tempRotSpeed;
         }
 
-        private Boolean nearByTarget(Point to, Boolean accNear = false)
+        private Boolean nearByTarget(Point to, Boolean accNear = false, int targetAdd = 0)
         {
-            return (nearByTargetX(to, accNear) && nearByTargetY(to, accNear));
+            return (nearByTargetX(to, accNear, targetAdd) && nearByTargetY(to, accNear, targetAdd));
         }
 
-        private Boolean nearByTargetX(Point t, Boolean accNear = false)
-        {
-            if (accNear)
-            {
-                return Math.Abs(sx - t.X) <= sAccerlationNearness;
-            }
-            else
-            {
-                return Math.Abs(sx - t.X) <= sNearness;
-            }
-        }
-
-        private Boolean nearByTargetY(Point t, Boolean accNear = false)
+        private Boolean nearByTargetX(Point t, Boolean accNear = false, int targetAdd = 0)
         {
             if (accNear)
             {
-                return Math.Abs(sy - t.Y) <= sAccerlationNearness;
+                return Math.Abs(sx - t.X) <= sAccerlationNearness + targetAdd;
             }
             else
             {
-                return Math.Abs(sy - t.Y) <= sNearness;
+                return Math.Abs(sx - t.X) <= sNearness + targetAdd;
+            }
+        }
+
+        private Boolean nearByTargetY(Point t, Boolean accNear = false, int targetAdd = 0)
+        {
+            if (accNear)
+            {
+                return Math.Abs(sy - t.Y) <= sAccerlationNearness + targetAdd;
+            }
+            else
+            {
+                return Math.Abs(sy - t.Y) <= sNearness + targetAdd;
             }
         }
 
@@ -304,6 +326,8 @@ namespace sharkexe2
             Point cursor = getCursorPoint();
             faceTarget(cursor);
             moveShark(cursor);
+
+            Console.WriteLine(sRotation + " : " + sToRotation);
         }
 
         private void updateFormLocation()
