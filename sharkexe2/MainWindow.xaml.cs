@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections;
 
 namespace sharkexe2
 {
@@ -21,12 +22,100 @@ namespace sharkexe2
     /// </summary>
     public partial class MainWindow : Window
     {
+        private System.Timers.Timer timer;
+        private int tickSpeed = 15;
+        List<Fish> fishList= new List<Fish>();
+        private Random rand;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            //Add first shark
+            fishList.Add(new Fish(this, this.imgMain));
+
+            makeNewFish(true);
+            makeNewFish(false);
+            makeNewFish(true);
+            makeNewFish(false);
+            makeNewFish(false);
+            makeNewFish(true);
+
+            rand = new Random();
+            timer = new System.Timers.Timer(tickSpeed);
+            timer.Elapsed += timer_tick;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+        }
+
+        private void makeNewFish(Boolean shark)
+        {
+            FishWindow fish = new FishWindow();
+            fish.Show();
+
+            String imageName = shark ? "shark" : "blahaj";
+            
+            fishList.Add(new Fish(fish, fish.imgMain, imageName));
+        }
+
+        private void timer_tick(object sender, EventArgs e)
+        {
+            foreach (Fish fish in fishList)
+            {
+                Dispatcher.BeginInvoke(new Action(fish.setImage));
+
+                if (!fish.lockModeSwitch)
+                {
+                    int randInt = rand.Next(0, 100);
+
+                    if (randInt < 10)
+                    {
+                        fish.lockModeSwitch = true;
+
+                        fish.sMode += rand.Next(0, 3);
+                        if (fish.sMode > 3)
+                        {
+                            fish.sMode = 1;
+                        }
+                    }
+                }
+
+                //sMode controls what exactly the shark does
+                switch (fish.sMode)
+                {
+                    case 0:
+                        fish.spinShark();
+                        break;
+                    case 1:
+                        fish.moveTowardsMousePoint();
+                        break;
+                    case 2:
+                        fish.moveAtRandom();
+                        break;
+                    case 3:
+                        fish.huntUnderTaskBar();
+                        break;
+                }
+
+
+                Dispatcher.BeginInvoke(new Action(fish.updateFormLocation));
+
+            }
+        }
+    }
+
+    public class Fish
+    {
+        //Form Details
+        public Window window;
+        public Image image;
+        private String imageName = "";
+
         //Basic Details
         private int sx = 0;
         private int sy = 0;
-        private int sTickSpeed = 15;
-        private int sMode = 1;
-        private Boolean lockModeSwitch = false;
+        public int sMode = 1;
+        public Boolean lockModeSwitch = false;
 
         private int sImgCounter = 0;
         private int sImgCounterMax = 10;
@@ -62,20 +151,21 @@ namespace sharkexe2
         // For moveAtRandom
         private Point randPoint = new Point();
         private int randCount = 0;
+        private Random rand;
 
-        private static System.Timers.Timer aTimer;
 
-        public MainWindow()
+        public Fish(Window window, Image image, String imageName = "shark")
         {
-            InitializeComponent();
+            this.window = window;
+            this.image = image;
+            this.imageName = imageName;
+            this.ScreenHeight = (int) SystemParameters.VirtualScreenHeight;
+            this.ScreenWidth = (int) SystemParameters.VirtualScreenWidth;
 
-            ScreenHeight = (int)SystemParameters.VirtualScreenHeight;
-            ScreenWidth = (int)SystemParameters.VirtualScreenWidth;
-
-            aTimer = new System.Timers.Timer(sTickSpeed);
-            aTimer.Elapsed += timer_tick;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
+            rand = new Random();
+            sMode = rand.Next(1, 3);
+            sx = rand.Next(0, ScreenWidth - CursorOffsetX);
+            sy = rand.Next(0, ScreenHeight - CursorOffsetY);
         }
 
         private void setSharkChill(Boolean chill)
@@ -104,7 +194,6 @@ namespace sharkexe2
 
         private Point generateRandomPoint(Boolean underTaskbar)
         {
-            Random rand = new Random();
             Point result = new Point();
 
             result.X = rand.Next(0, ScreenWidth);
@@ -125,39 +214,6 @@ namespace sharkexe2
         {
             var cursorPoint = System.Windows.Forms.Cursor.Position;
             return new Point(cursorPoint.X - CursorOffsetX, cursorPoint.Y - CursorOffsetY);
-        }
-
-        private void setImage()
-        {
-            if (sImgPause)
-            {
-                return;
-            }
-
-            if (sImgSkip || sImgCounter >= sImgCounterMax)
-            {
-                sImgSkip = false;
-                sImgCounter = 0;
-
-                if (sAnimMode == 1)
-                {
-                    sAnimMode = 2;
-                }
-                else
-                {
-                    sAnimMode = 1;
-                }
-
-                imgMain.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/" + sDir.ToString() + sAnimMode.ToString() + ".png"));
-
-                RotateTransform rotateTransform1 = new RotateTransform(sRotation);
-                imgMain.RenderTransformOrigin = new Point(0.5, 0.5);
-                imgMain.RenderTransform = rotateTransform1;
-            }
-            else
-            {
-                sImgCounter++;
-            }
         }
 
         private void setSDir(int val)
@@ -348,49 +404,40 @@ namespace sharkexe2
             }
         }
 
-        private void timer_tick(object sender, EventArgs e)
+        public void setImage()
         {
-            Dispatcher.BeginInvoke(new Action(setImage));
-
-            if (!lockModeSwitch)
+            if (sImgPause)
             {
-                Random rand = new Random();
-                int randInt = rand.Next(0, 100);
+                return;
+            }
 
-                if (randInt < 10)
+            if (sImgSkip || sImgCounter >= sImgCounterMax)
+            {
+                sImgSkip = false;
+                sImgCounter = 0;
+
+                if (sAnimMode == 1)
                 {
-                    lockModeSwitch = true;
-
-                    sMode += rand.Next(0, 3);
-                    if (sMode > 3)
-                    {
-                        sMode = 1;
-                    }
+                    sAnimMode = 2;
                 }
-            }
+                else
+                {
+                    sAnimMode = 1;
+                }
 
-            //sMode controls what exactly the shark does
-            switch (sMode)
+                image.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/" + imageName + sDir.ToString() + sAnimMode.ToString() + ".png"));
+
+                RotateTransform rotateTransform1 = new RotateTransform(sRotation);
+                image.RenderTransformOrigin = new Point(0.5, 0.5);
+                image.RenderTransform = rotateTransform1;
+            }
+            else
             {
-                case 0:
-                    spinShark();
-                    break;
-                case 1:
-                    moveTowardsMousePoint();
-                    break;
-                case 2:
-                    moveAtRandom();
-                    break;
-                case 3:
-                    huntUnderTaskBar();
-                    break;
+                sImgCounter++;
             }
-
-
-            Dispatcher.BeginInvoke(new Action(updateFormLocation));
         }
 
-        private void spinShark()
+        public void spinShark()
         {
             lockModeSwitch = false;
             if (Math.Abs(sRotation) >= 360)
@@ -403,7 +450,7 @@ namespace sharkexe2
             }
         }
 
-        private void moveTowardsMousePoint()
+        public void moveTowardsMousePoint()
         {
             setSharkChill(false);
             Point cursor = getCursorPoint();
@@ -421,7 +468,7 @@ namespace sharkexe2
 
         }
 
-        private void moveAtRandom()
+        public void moveAtRandom()
         {
             setSharkChill(true);
 
@@ -440,7 +487,7 @@ namespace sharkexe2
             moveShark(randPoint);
         }
 
-        private void huntUnderTaskBar()
+        public void huntUnderTaskBar()
         {
             setSharkChill(true);
 
@@ -459,10 +506,10 @@ namespace sharkexe2
             moveShark(randPoint);
         }
 
-        private void updateFormLocation()
+        public void updateFormLocation()
         {
-            this.Left = sx;
-            this.Top = sy;
+            window.Left = sx;
+            window.Top = sy;
         }
 
     }
