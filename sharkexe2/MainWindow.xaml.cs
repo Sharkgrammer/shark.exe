@@ -25,13 +25,15 @@ namespace sharkexe2
         private int sx = 0;
         private int sy = 0;
         private int sTickSpeed = 15;
+        private int sMode = 1;
+        private Boolean lockModeSwitch = false;
 
         private int sImgCounter = 0;
         private int sImgCounterMax = 10;
         private Boolean sImgSkip = true;
         private Boolean sImgPause = false;
         private int sDir = 0;
-        private int sMode = 2;
+        private int sAnimMode = 2;
 
         private int sRotationSpeed = 1;
         private double sToRotation = 0;
@@ -51,9 +53,15 @@ namespace sharkexe2
 
         private int CursorOffsetX = 85;
         private int CursorOffsetY = 50;
+        private int ScreenHeight = 0;
+        private int ScreenWidth = 0;
 
-        //Other functions
-        private Boolean followMouse = true;
+        // For moveTowardsMousePoint
+        private int moveTowardsCount = 0;
+
+        // For moveAtRandom
+        private Point randPoint = new Point();
+        private int randCount = 0;
 
         private static System.Timers.Timer aTimer;
 
@@ -61,10 +69,56 @@ namespace sharkexe2
         {
             InitializeComponent();
 
+            ScreenHeight = (int)SystemParameters.VirtualScreenHeight;
+            ScreenWidth = (int)SystemParameters.VirtualScreenWidth;
+
             aTimer = new System.Timers.Timer(sTickSpeed);
             aTimer.Elapsed += timer_tick;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
+        }
+
+        private void setSharkChill(Boolean chill)
+        {
+
+            if (sTopSpeed == 5 && chill)
+            {
+                sSpeedX = 0.2;
+                sSpeedY = 0.1;
+                sTopSpeed = 3;
+                sTopSpeedStraight = 5;
+                sStartSpeed = 0;
+                sAccerlation = 0.1;
+            }
+            else if (sTopSpeed != 5 && !chill)
+            {
+                sSpeedX = 1;
+                sSpeedY = 1;
+                sTopSpeed = 5;
+                sTopSpeedStraight = 10;
+                sStartSpeed = 1;
+                sAccerlation = 0.3;
+            }
+
+        }
+
+        private Point generateRandomPoint(Boolean underTaskbar)
+        {
+            Random rand = new Random();
+            Point result = new Point();
+
+            result.X = rand.Next(0, ScreenWidth);
+
+            if (underTaskbar)
+            {
+                result.Y = Screen.PrimaryScreen.Bounds.Height - 23;
+            }
+            else
+            {
+                result.Y = rand.Next(0, Screen.PrimaryScreen.Bounds.Height);
+            }
+
+            return result;
         }
 
         private Point getCursorPoint()
@@ -85,17 +139,16 @@ namespace sharkexe2
                 sImgSkip = false;
                 sImgCounter = 0;
 
-                if (sMode == 1)
+                if (sAnimMode == 1)
                 {
-                    sMode = 2;
+                    sAnimMode = 2;
                 }
                 else
                 {
-                    sMode = 1;
+                    sAnimMode = 1;
                 }
 
-                imgMain.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/" + sDir.ToString() + sMode.ToString() + ".png"));
-
+                imgMain.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/" + sDir.ToString() + sAnimMode.ToString() + ".png"));
 
                 RotateTransform rotateTransform1 = new RotateTransform(sRotation);
                 imgMain.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -197,7 +250,7 @@ namespace sharkexe2
             }
             else
             {
-                if(sSpeedY < sTopSpeed || (!isRotating && sSpeedY < sTopSpeedStraight))
+                if (sSpeedY < sTopSpeed || (!isRotating && sSpeedY < sTopSpeedStraight))
                 {
                     sSpeedY += sAccerlation;
                 }
@@ -232,7 +285,9 @@ namespace sharkexe2
             double x = to.X - sx;
             double y = to.Y - sy;
 
-            sToRotation = Math.Atan(y/x) * 180 / Math.PI;
+            sToRotation = Math.Atan(y / x) * 180 / Math.PI;
+
+            //Console.WriteLine("X:" + x + " Y:" + y + " ATAN:" + sToRotation);
 
             if (sRotation < sToRotation)
             {
@@ -297,20 +352,47 @@ namespace sharkexe2
         {
             Dispatcher.BeginInvoke(new Action(setImage));
 
-            if (!followMouse)
+            if (!lockModeSwitch)
             {
-                spinShark();
+                Random rand = new Random();
+                int randInt = rand.Next(0, 100);
+
+                if (randInt < 10)
+                {
+                    lockModeSwitch = true;
+
+                    sMode += rand.Next(0, 3);
+                    if (sMode > 3)
+                    {
+                        sMode = 1;
+                    }
+                }
             }
-            else
+
+            //sMode controls what exactly the shark does
+            switch (sMode)
             {
-                moveTowardsMousePoint();
+                case 0:
+                    spinShark();
+                    break;
+                case 1:
+                    moveTowardsMousePoint();
+                    break;
+                case 2:
+                    moveAtRandom();
+                    break;
+                case 3:
+                    huntUnderTaskBar();
+                    break;
             }
+
 
             Dispatcher.BeginInvoke(new Action(updateFormLocation));
         }
 
         private void spinShark()
         {
+            lockModeSwitch = false;
             if (Math.Abs(sRotation) >= 360)
             {
                 sRotation = 0;
@@ -323,11 +405,58 @@ namespace sharkexe2
 
         private void moveTowardsMousePoint()
         {
+            setSharkChill(false);
             Point cursor = getCursorPoint();
             faceTarget(cursor);
             moveShark(cursor);
 
-            Console.WriteLine(sRotation + " : " + sToRotation);
+            if (nearByTarget(cursor, true))
+            {
+                if (moveTowardsCount++ > 25)
+                {
+                    moveTowardsCount = 0;
+                    lockModeSwitch = false;
+                }
+            }
+
+        }
+
+        private void moveAtRandom()
+        {
+            setSharkChill(true);
+
+            if ((randPoint.X == 0 && randPoint.Y == 0) || nearByTarget(randPoint, false, 25))
+            {
+                randPoint = generateRandomPoint(false);
+
+                if (randCount++ > 5)
+                {
+                    randCount = 0;
+                    lockModeSwitch = false;
+                }
+            }
+
+            faceTarget(randPoint);
+            moveShark(randPoint);
+        }
+
+        private void huntUnderTaskBar()
+        {
+            setSharkChill(true);
+
+            if ((randPoint.X == 0 && randPoint.Y == 0) || nearByTarget(randPoint, false, 25))
+            {
+                randPoint = generateRandomPoint(true);
+
+                if (randCount++ > 5)
+                {
+                    randCount = 0;
+                    lockModeSwitch = false;
+                }
+            }
+
+            faceTarget(randPoint);
+            moveShark(randPoint);
         }
 
         private void updateFormLocation()
