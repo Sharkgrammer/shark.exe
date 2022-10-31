@@ -1,12 +1,8 @@
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Debug\sharkexe2.exe.config
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Debug\sharkexe2.exe
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Debug\sharkexe2.pdb
-C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.csprojAssemblyReference.cache
-C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\MainWindow.g.cs
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\App.g.cs
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2_MarkupCompile.cache
-C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2_MarkupCompile.lref
-C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\MainWindow.baml
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.g.resources
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.Properties.Resources.resources
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.csproj.GenerateResource.cache
@@ -15,3 +11,5 @@ C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.exe
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.pdb
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\FishWindow.g.cs
 C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\FishWindow.baml
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.csproj.AssemblyReference.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Debug\sharkexe2.csproj.SuggestedBindingRedirects.cache
