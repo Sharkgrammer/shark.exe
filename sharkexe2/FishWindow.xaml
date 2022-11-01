@@ -7,7 +7,8 @@
         Title="MainWindow" Left="0" Top="0" Height="100" Width="100" AllowsTransparency="True" WindowStyle="None" Background="Transparent">
 
     <Grid x:Name="imgGrid">
-        <Image x:Name="imgMain" Width="100" VerticalAlignment="Center"/>
+        <Canvas x:Name="canvas"></Canvas>
+        <Image x:Name="imgMain" Width="100" VerticalAlignment="Center"  Visibility="Hidden"/>
     </Grid>
 
 </Window>

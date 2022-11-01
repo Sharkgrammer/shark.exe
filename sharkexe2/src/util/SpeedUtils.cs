@@ -15,36 +15,29 @@ namespace sharkexe2.src.util
         private Velocity minVelocity { get; set; }
 
 
-        private double maxSpeed { get; set; } = 10;
-        private double accerlation { get; set; } = 0.3;
-        private double decerlation { get; set; } = 0.6;
+        public double maxSpeed { get; set; } = 5;
+        public double accerlation { get; set; } = 0.1;
+        public double decerlation { get; set; } = 0.3;
 
-        public SpeedUtils()
+        public SpeedUtils(double maxSpeed = 5)
         {
-            this.currentVelocity = new Velocity()
-            {
-                X = 0,
-                Y = 0,
-            };
+            this.maxSpeed = maxSpeed;
+
+            this.currentVelocity = new Velocity();
+            this.maxVelocity = new Velocity();
 
             this.minVelocity = new Velocity()
             {
                 X = 0,
                 Y = 0,
             };
-
-            this.maxVelocity = new Velocity()
-            {
-                X = 0,
-                Y = 0,
-            };
         }
 
-        public Velocity calcVelocity(double rotation = 0.0, Boolean decerlate = false)
+        public Velocity calcVelocity(double rotation = 0.0, Boolean decerlateX = false, Boolean decerlateY = false)
         {
             calcMaxRotationVelocity(rotation);
 
-            currentVelocity.adjustVelocity(accerlation, decerlation, maxVelocity, minVelocity, decerlate);
+            currentVelocity.adjustVelocity(accerlation, decerlation, maxVelocity, minVelocity, decerlateX, decerlateY);
 
             return currentVelocity;
         }
@@ -69,8 +62,8 @@ namespace sharkexe2.src.util
             maxVelocity.Y = rotationChange * maxSpeed;
             maxVelocity.X = (1 - Math.Abs(rotationChange)) * maxSpeed;
 
-            if (!posX) maxVelocity.X *= -1;
-            if (!posY) maxVelocity.Y *= -1;
+            //if (!posX) maxVelocity.X *= -1;
+            //if (!posY) maxVelocity.Y *= -1;
 
             if (maxVelocity.half)
             {
@@ -85,9 +78,16 @@ namespace sharkexe2.src.util
             maxVelocity.half = val;
         }
 
+        public int getDecerlationBubble()
+        {
+            double currentSpeed = currentVelocity.currentSpeed();
+
+            return Math.Max((int) Math.Round(currentSpeed / decerlation, 0),(int) maxSpeed * 2);
+        }
+
         public String toString()
         {
-            return "SpeedUtils.toString() -> currentVelc: " + currentVelocity.toString();
+            return "SpeedUtils.toString() -> currentVelc: " + currentVelocity.toString() + "  maxVelc: " + maxVelocity.toString();
         }
     }
 }

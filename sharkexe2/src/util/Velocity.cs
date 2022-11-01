@@ -16,20 +16,29 @@ namespace sharkexe2.src.util
 
         public bool half = false;
 
-        public void adjustVelocity(double accerlation, double decerlation, Velocity maxSpeeds, Velocity minSpeeds, Boolean forceDecerlate = false)
+        public void adjustVelocity(double accerlation, double decerlation, Velocity maxSpeeds, Velocity minSpeeds, Boolean decerlateX = false, Boolean decerlateY = false)
         {
-            if (forceDecerlate)
+            if (decerlateX)
             {
-                decelerate(decerlation, minSpeeds);
+                decelerateX(decerlation, minSpeeds);
             }
             else
             {
-                accelerate(accerlation, decerlation, maxSpeeds, minSpeeds);
+                accelerateX(accerlation, decerlation, maxSpeeds, minSpeeds);
+            }
+
+            if (decerlateY)
+            {
+                decelerateY(decerlation, minSpeeds);
+            }
+            else
+            {
+                accelerateY(accerlation, decerlation, maxSpeeds, minSpeeds);
             }
 
         }
 
-        private void accelerate(double accerlation, double decerlation, Velocity maxSpeeds, Velocity minSpeeds)
+        private void accelerateX(double accerlation, double decerlation, Velocity maxSpeeds, Velocity minSpeeds)
         {
             if (this.X < maxSpeeds.X)
             {
@@ -44,7 +53,10 @@ namespace sharkexe2.src.util
             {
                 decelerateX(decerlation, minSpeeds);
             }
+        }
 
+        private void accelerateY(double accerlation, double decerlation, Velocity maxSpeeds, Velocity minSpeeds)
+        {
             if (this.Y < maxSpeeds.Y)
             {
                 this.Y += this.half ? accerlation / 2 : accerlation;
@@ -58,13 +70,6 @@ namespace sharkexe2.src.util
             {
                 decelerateY(decerlation, minSpeeds);
             }
-
-        }
-
-        private void decelerate(double decerlation, Velocity minSpeeds)
-        {
-            decelerateX(decerlation, minSpeeds);
-            decelerateY(decerlation, minSpeeds);
         }
 
         private void decelerateX(double decerlation, Velocity minSpeeds)
@@ -93,9 +98,13 @@ namespace sharkexe2.src.util
             }
         }
 
+        public double currentSpeed()
+        {
+            return X + Y;
+        }
         public String toString()
         {
-            return "Velocity.toString() -> X:" + X + " Y:" + Y + " half:" + half;
+            return "Velocity.toString() -> currentSpeed:" + currentSpeed() + " X:" + X + " Y:" + Y + " half:" + half;
         }
 
     }

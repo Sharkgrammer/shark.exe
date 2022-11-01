@@ -11,11 +11,13 @@ namespace sharkexe2.src.util
 
         public double Y { get; set; }
 
-        public Position(bool random = true)
+        public Boolean active { get; set; } = true;
+
+        public Position(Offset offset = null, bool random = true)
         {
-            if (random)
+            if (random && offset != null)
             {
-                getRandomPosition();
+                getRandomPosition(offset);
             }
             else
             {
@@ -36,16 +38,16 @@ namespace sharkexe2.src.util
             Y = point.Y;
         }
 
-        private void getRandomPosition()
+        private void getRandomPosition(Offset offset)
         {
-            X = Utils.random.Next(0, (int) SystemParameters.VirtualScreenWidth);
-            Y = Utils.random.Next(0, (int) SystemParameters.VirtualScreenHeight);
+            X = Utils.random.Next(0, (int) SystemParameters.FullPrimaryScreenWidth - offset.X);
+            Y = Utils.random.Next(0, (int) SystemParameters.VirtualScreenHeight - offset.Y);
         }
 
-        public void calcPosition(Position to, Velocity velocity)
+        public void calcPosition(Position to, Velocity velocity, int bubble)
         {
             // X position
-            if (!nearByPositionX(to, 10))
+            if (!nearByPositionX(to, bubble))
             {
                 if (X > to.X)
                 {
@@ -58,7 +60,7 @@ namespace sharkexe2.src.util
             }
 
             // Y position
-            if (!nearByPositionY(to, 10))
+            if (!nearByPositionY(to, bubble))
             {
                 if (Y > to.Y)
                 {

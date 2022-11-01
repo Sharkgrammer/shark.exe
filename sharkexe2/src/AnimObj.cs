@@ -1,111 +1,149 @@
 ﻿using sharkexe2.src.util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using Rotation = sharkexe2.src.util.Rotation;
 
 namespace sharkexe2
 {
     public class AnimObj
     {
-        //Form Details
         public Window window;
         public Image imageBox;
-        private String imageName = "";
-        private Random rand = new Random();
+        public Boolean debug = false;
 
-        //Basic Details
         public Position objPosition;
+        public Position toPosition;
         public Rotation objRotation;
+        public Offset objOffset;
         public SpeedUtils objSpeed;
 
+        public Boolean flipCorrectionLeft = false;
+        public Boolean flipCorrectionRight = false;
+        public int flipCorrectionCounter = 0;
 
-        private int modelBubble = 5;
-        private int accerlationBubble = 30;
-
-
-        private int CursorOffsetX = 85;
-        private int CursorOffsetY = 50;
-
-
-        public AnimObj(Window window, Image imageBox, String imageName = "shark")
+        public AnimObj(Window window, Image imageBox)
         {
-            objSpeed = new SpeedUtils();
-
             this.window = window;
             this.imageBox = imageBox;
-            this.imageName = imageName;
-
-            imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/shark01.png"));
-
-
-            rand = new Random();
-            objSpeed = new SpeedUtils();
-            objPosition = new Position(10, 10);
-            objRotation = new Rotation();
-
-        }
-
-        public AnimObj()
-        {
-            objSpeed = new SpeedUtils();
-            objPosition = new Position(0, 0);
-            objRotation = new Rotation();
-
-            Console.WriteLine("Current Position -> X:" + objPosition.X + " Y:" + objPosition.Y);
-        }
-
-        public void moveAtRandom()
-        {
-
         }
 
         public void moveTowardsPosition(Position to)
         {
+            toPosition = to;
             objRotation.faceTowardsPosition(objPosition, to);
 
-            objSpeed.calcVelocity(objRotation.currentRotation);
+            bool decX = objPosition.nearByPositionX(to, objSpeed.getDecerlationBubble());
+            bool decY = objPosition.nearByPositionY(to, objSpeed.getDecerlationBubble());
 
-            objPosition.calcPosition(to, objSpeed.currentVelocity);
-        }
+            objSpeed.calcVelocity(objRotation.currentRotation, decX, decY);
 
-
-        public SpeedUtils getRotationSpeed(double rotation)
-        {
-            Velocity v = objSpeed.calcVelocity(rotation, false);
-
-
-            return objSpeed;
-        }
-
-        public void moveAtHalf()
-        {
-            objSpeed.setHalfVelocity(true);
+            objPosition.calcPosition(to, objSpeed.currentVelocity, 10);
         }
 
         public Position getCursorPoint()
         {
             var cursorPoint = System.Windows.Forms.Cursor.Position;
-            return new Position(cursorPoint.X - CursorOffsetX, cursorPoint.Y - CursorOffsetY);
+            return new Position(cursorPoint.X - objOffset.X, cursorPoint.Y - objOffset.Y);
         }
 
-        public void updateFormLocation()
+        public void update()
         {
+            if (this.imageBox.Visibility == Visibility.Hidden)
+            {
+                this.imageBox.Visibility = Visibility.Visible;
+            }
+
             window.Left = objPosition.X;
             window.Top = objPosition.Y;
 
-            RotateTransform rotateBox = new RotateTransform(objRotation.currentRotation);
-            imageBox.RenderTransformOrigin = new Point(0.5, 0.5);
-            imageBox.RenderTransform = rotateBox;
+            manageImage();
+            animateObj();
+
+            if (debug) runDebug();
+        }
+
+        private void manageImage()
+        {
+            if (toPosition.active)
+            {
+                if (!objPosition.nearByPosition(toPosition, window.Width / 3))
+                {
+                    objOffset.adjustOffset(objRotation.currentRotation);
+
+                    RotateTransform rotateBox;
+                    ScaleTransform scaleBox = new ScaleTransform();
+
+                    if (Math.Round(objPosition.X, 0) < Math.Round(toPosition.X, 0))
+                    {
+                        scaleBox.ScaleX = 1;
+                        rotateBox = new RotateTransform(objRotation.currentRotation);
+                        flipCorrectionLeft = true;
+
+                        if (flipCorrectionRight)
+                        {
+                            flipCorrectionCounter++;
+                            objRotation.forceFaceTowardsPosition(objPosition, toPosition);
+
+                            if (flipCorrectionCounter > 2)
+                            {
+                                flipCorrectionCounter = 0;
+                                flipCorrectionRight = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        scaleBox.ScaleX = -1;
+                        objOffset.flip(window.Width, window.Height);
+                        rotateBox = new RotateTransform(360 - objRotation.currentRotation);
+                        flipCorrectionRight = true;
+
+                        if (flipCorrectionLeft)
+                        {
+                            flipCorrectionCounter++;
+                            objRotation.forceFaceTowardsPosition(objPosition, toPosition);
+
+                            if (flipCorrectionCounter > 2)
+                            {
+                                flipCorrectionCounter = 0;
+                                flipCorrectionLeft = false;
+                            }
+                        }
+                    }
+
+                    TransformGroup transformGroup = new TransformGroup();
+                    transformGroup.Children.Add(rotateBox);
+                    transformGroup.Children.Add(scaleBox);
+
+                    imageBox.RenderTransform = transformGroup;
+                }
+            }
+            else
+            {
+                imageBox.RenderTransform = new RotateTransform(objRotation.currentRotation);
+            }
+        }
+
+        public virtual void animateObj()
+        {
+            // Extend to animate what the obj does
+        }
+
+        private void runDebug()
+        {
+            Console.WriteLine();
+            Console.WriteLine(this.ToString() + "<" + this.GetHashCode() + "> -> " + imageBox.Source);
+            Console.WriteLine(objOffset.toString());
+            Console.WriteLine(objPosition.toString());
+            Console.WriteLine(toPosition.toString());
+            Console.WriteLine(objRotation.toString());
+            Console.WriteLine(objSpeed.toString());
+            Console.WriteLine();
+
+            ((FishWindow) window).paintCursorPoint(objOffset);
         }
 
     }

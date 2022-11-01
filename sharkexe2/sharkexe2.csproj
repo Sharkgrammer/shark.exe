@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="src\AnimObj.cs" />
     <Compile Include="src\Shark.cs" />
+    <Compile Include="src\util\Offset.cs" />
     <Compile Include="src\util\Position.cs" />
     <Compile Include="src\util\Rotation.cs" />
     <Compile Include="src\util\Utils.cs" />

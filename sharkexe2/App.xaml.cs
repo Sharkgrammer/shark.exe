@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -20,110 +16,58 @@ namespace sharkexe2
     public partial class App : Application
     {
         private System.Timers.Timer timer;
-        private int tickSpeed = 15;
-        private List<Fish> fishList = new List<Fish>();
-        private Random rand;
-
-
-        private Shark shark;
+        private int tickSpeed = 10;
+        private List<AnimObj> objList = new List<AnimObj>();
 
         public App()
         {
+            int counter = 0;
 
-            //makeNewFish(true);
-            //temp();
+            while(counter++ <= 10)
+            {
+                int rand = Utils.random.Next(0, 2);
 
+                if (rand == 0)
+                {
+                    makeNewTemp(false, true);
+                }
+                else
+                {
+                    makeNewTemp(false, false);
+                }
+            }
 
-            FishWindow fish = new FishWindow();
-            fish.Show();
-
-            shark = new Shark(fish, fish.imgMain, "shark");
-            ///*
-            rand = new Random();
             timer = new System.Timers.Timer(tickSpeed);
             timer.Elapsed += timer_tick;
             timer.AutoReset = true;
-            timer.Enabled = true;//*/
+            timer.Enabled = true;
         }
 
-        private void temp()
-        {
-            AnimObj animObj = new AnimObj();
-
-            Position pos = new Position(1000, 1000);
-
-            Console.WriteLine("To Position -> X:" + pos.X + " Y:" + pos.Y);
-
-            int x = 0;
-
-
-            while(x++ < 100)
-            {
-                animObj.moveTowardsPosition(pos);
-            }
-
-            //SpeedUtils s = animObj.getRotationSpeed(0);
-        }
-
-        private void makeNewFish(Boolean shark)
+        private void makeNewTemp(Boolean debug = false, Boolean sharkBool = true)
         {
             FishWindow fish = new FishWindow();
             fish.Show();
 
-            String imageName = shark ? "shark" : "blahaj";
+            String name = sharkBool ? "shark" : "blahaj";
 
-            fishList.Add(new Fish(fish, fish.imgMain, imageName));
+            Shark shark = new Shark(fish, fish.imgMain, name);
+            shark.debug = debug;
+
+            objList.Add(shark);
         }
 
         private void timer_tick(object sender, EventArgs e)
-        {
-
-            shark.huntCursor();
-            Dispatcher.BeginInvoke(new Action(shark.updateFormLocation));
-
-            /*
-            foreach (Fish fish in fishList)
+        {   
+            foreach (AnimObj obj in objList)
             {
-                Dispatcher.BeginInvoke(new Action(fish.setImage));
-
-                if (!fish.lockModeSwitch)
+                if (obj is Shark)
                 {
-                    int randInt = rand.Next(0, 100);
-
-                    if (randInt < 10)
-                    {
-                        fish.lockModeSwitch = true;
-
-                        fish.sMode += rand.Next(0, 3);
-                        if (fish.sMode > 3)
-                        {
-                            fish.sMode = 1;
-                        }
-                    }
+                    ((Shark) obj).wanderScreen();
                 }
 
-                //sMode controls what exactly the shark does
-                switch (fish.sMode)
-                {
-                    case 0:
-                        fish.spinShark();
-                        break;
-                    case 1:
-                        fish.moveTowardsMousePoint();
-                        break;
-                    case 2:
-                        fish.moveAtRandom();
-                        break;
-                    case 3:
-                        fish.huntUnderTaskBar();
-                        break;
-                }
-
-
-                Dispatcher.BeginInvoke(new Action(fish.updateFormLocation));
-
+                Dispatcher.BeginInvoke(new Action(obj.update));                
             }
-            */
+            
         }
     }
 
