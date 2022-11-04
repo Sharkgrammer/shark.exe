@@ -19,12 +19,12 @@ namespace sharkexe2.src.util
             this.Radius = radius;    
         }
 
-        public void adjustOffset(double rotation = 0.0)
+        public void adjustOffset(double rotation = 0.0, int width = 50)
         {
             rotation = (Math.PI / 180) * rotation;
 
-            X = Math.Abs((int) (50 + Radius * Math.Cos(rotation)));
-            Y = Math.Abs((int) (50 + Radius * Math.Sin(rotation)));
+            X = Math.Abs((int) ((width / 2) + Radius * Math.Cos(rotation)));
+            Y = Math.Abs((int) ((width / 2) + Radius * Math.Sin(rotation)));
         }
         
         public void flip(double width, double height)

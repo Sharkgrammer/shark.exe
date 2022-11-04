@@ -59,13 +59,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="src\AnimObj.cs" />
+    <Compile Include="src\globalUtils\objThread.cs" />
     <Compile Include="src\Shark.cs" />
-    <Compile Include="src\util\Offset.cs" />
-    <Compile Include="src\util\Position.cs" />
-    <Compile Include="src\util\Rotation.cs" />
-    <Compile Include="src\util\Utils.cs" />
-    <Compile Include="src\util\Velocity.cs" />
-    <Compile Include="src\util\SpeedUtils.cs" />
+    <Compile Include="src\objUtils\Offset.cs" />
+    <Compile Include="src\objUtils\Position.cs" />
+    <Compile Include="src\objUtils\Rotation.cs" />
+    <Compile Include="src\globalUtils\Utils.cs" />
+    <Compile Include="src\objUtils\Velocity.cs" />
+    <Compile Include="src\objUtils\SpeedUtils.cs" />
     <Page Include="FishWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

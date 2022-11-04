@@ -11,8 +11,6 @@ namespace sharkexe2.src.util
 
         public double Y { get; set; }
 
-        public Boolean active { get; set; } = true;
-
         public Position(Offset offset = null, bool random = true)
         {
             if (random && offset != null)
@@ -38,9 +36,15 @@ namespace sharkexe2.src.util
             Y = point.Y;
         }
 
+        public Position getOffsetPosition(Offset offset)
+        {
+            return new Position(X + offset.X, Y + offset.Y);
+        }
+
         private void getRandomPosition(Offset offset)
         {
-            X = Utils.random.Next(0, (int) SystemParameters.FullPrimaryScreenWidth - offset.X);
+            //X = Utils.random.Next(0, (int)SystemParameters.VirtualScreenWidth - offset.X);
+            X = Utils.random.Next(0, (int) SystemParameters.PrimaryScreenWidth- offset.X);
             Y = Utils.random.Next(0, (int) SystemParameters.VirtualScreenHeight - offset.Y);
         }
 

@@ -1,4 +1,5 @@
 ﻿using sharkexe2.src.util;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -54,6 +55,13 @@ namespace sharkexe2
             canvas.Children.Add(rec);
             Canvas.SetLeft(rec, points.X);
             Canvas.SetTop(rec, points.Y);
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            this.Topmost = true;
+            this.Activate();
+            this.Focus();
         }
 
     }

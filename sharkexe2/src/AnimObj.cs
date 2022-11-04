@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Rotation = sharkexe2.src.util.Rotation;
@@ -12,7 +13,11 @@ namespace sharkexe2
     {
         public Window window;
         public Image imageBox;
+
         public Boolean debug = false;
+        public Boolean pauseObj = false;
+        public Boolean deleteObj = false;
+        public Boolean huntedObj = false;
 
         public Position objPosition;
         public Position toPosition;
@@ -28,6 +33,19 @@ namespace sharkexe2
         {
             this.window = window;
             this.imageBox = imageBox;
+
+            this.imageBox.MouseLeftButtonUp += (s, e) => {
+                pauseObj = !pauseObj;
+            };
+
+            this.imageBox.MouseRightButtonUp += (s, e) => {
+                deleteObj = true;
+            };
+        }
+
+        public void delete()
+        {
+            this.window.Close();
         }
 
         public void moveTowardsPosition(Position to)
@@ -67,69 +85,67 @@ namespace sharkexe2
 
         private void manageImage()
         {
-            if (toPosition.active)
+            if (!objPosition.nearByPosition(toPosition, window.Width / 3))
             {
-                if (!objPosition.nearByPosition(toPosition, window.Width / 3))
+                objOffset.adjustOffset(objRotation.currentRotation, (int) window.Width);
+
+                RotateTransform rotateBox;
+                ScaleTransform scaleBox = new ScaleTransform();
+
+                if (Math.Round(objPosition.X, 0) < Math.Round(toPosition.X, 0))
                 {
-                    objOffset.adjustOffset(objRotation.currentRotation);
+                    scaleBox.ScaleX = 1;
+                    rotateBox = new RotateTransform(objRotation.currentRotation);
+                    flipCorrectionLeft = true;
 
-                    RotateTransform rotateBox;
-                    ScaleTransform scaleBox = new ScaleTransform();
-
-                    if (Math.Round(objPosition.X, 0) < Math.Round(toPosition.X, 0))
+                    if (flipCorrectionRight)
                     {
-                        scaleBox.ScaleX = 1;
-                        rotateBox = new RotateTransform(objRotation.currentRotation);
-                        flipCorrectionLeft = true;
+                        flipCorrectionCounter++;
+                        objRotation.forceFaceTowardsPosition(objPosition, toPosition);
 
-                        if (flipCorrectionRight)
+                        if (flipCorrectionCounter > 2)
                         {
-                            flipCorrectionCounter++;
-                            objRotation.forceFaceTowardsPosition(objPosition, toPosition);
-
-                            if (flipCorrectionCounter > 2)
-                            {
-                                flipCorrectionCounter = 0;
-                                flipCorrectionRight = false;
-                            }
+                            flipCorrectionCounter = 0;
+                            flipCorrectionRight = false;
                         }
                     }
-                    else
-                    {
-                        scaleBox.ScaleX = -1;
-                        objOffset.flip(window.Width, window.Height);
-                        rotateBox = new RotateTransform(360 - objRotation.currentRotation);
-                        flipCorrectionRight = true;
-
-                        if (flipCorrectionLeft)
-                        {
-                            flipCorrectionCounter++;
-                            objRotation.forceFaceTowardsPosition(objPosition, toPosition);
-
-                            if (flipCorrectionCounter > 2)
-                            {
-                                flipCorrectionCounter = 0;
-                                flipCorrectionLeft = false;
-                            }
-                        }
-                    }
-
-                    TransformGroup transformGroup = new TransformGroup();
-                    transformGroup.Children.Add(rotateBox);
-                    transformGroup.Children.Add(scaleBox);
-
-                    imageBox.RenderTransform = transformGroup;
                 }
-            }
-            else
-            {
-                imageBox.RenderTransform = new RotateTransform(objRotation.currentRotation);
+                else
+                {
+                    scaleBox.ScaleX = -1;
+                    objOffset.flip(window.Width, window.Height);
+                    rotateBox = new RotateTransform(360 - objRotation.currentRotation);
+                    flipCorrectionRight = true;
+
+                    if (flipCorrectionLeft)
+                    {
+                        flipCorrectionCounter++;
+                        objRotation.forceFaceTowardsPosition(objPosition, toPosition);
+
+                        if (flipCorrectionCounter > 2)
+                        {
+                            flipCorrectionCounter = 0;
+                            flipCorrectionLeft = false;
+                        }
+                    }
+                }
+
+                TransformGroup transformGroup = new TransformGroup();
+                transformGroup.Children.Add(rotateBox);
+                transformGroup.Children.Add(scaleBox);
+
+                imageBox.RenderTransform = transformGroup;
             }
         }
 
         public virtual void animateObj()
         {
             // Extend to animate what the obj does
+        }
+
+        public virtual void runActions()
+        {
+            // Extend to implment what the obj does
         }
 
         private void runDebug()
@@ -141,10 +157,18 @@ namespace sharkexe2
             Console.WriteLine(toPosition.toString());
             Console.WriteLine(objRotation.toString());
             Console.WriteLine(objSpeed.toString());
+            
+            String child = childDebug();
+            if (child != "") Console.WriteLine(child);
+
             Console.WriteLine();
 
             ((FishWindow) window).paintCursorPoint(objOffset);
         }
 
+        public virtual String childDebug()
+        {
+            return "";
+        }
     }
 }
