@@ -17,7 +17,7 @@ namespace sharkexe2
         private int animateMode = 1;
 
         private int actionMode = 0;
-        private int actionModeAmt = 3;
+        private int actionModeAmt = 2;
         private int actionCounter = 0;
 
         private int? huntingObjIndex = null;
@@ -94,7 +94,7 @@ namespace sharkexe2
                     break;
 
                 case 2:
-                    huntObj();
+                    //huntObj();
                     break;
 
                 case 3:
@@ -243,7 +243,7 @@ namespace sharkexe2
 
         public override String childDebug()
         {
-            return "Idx:" + Utils.getObjIndex(this) + " Mode:" + actionMode + " huntIdx:" + huntingObjIndex;
+            return "Shark Idx:" + Utils.getObjIndex(this) + " Mode:" + actionMode + " huntIdx:" + huntingObjIndex;
         }
     }
 }

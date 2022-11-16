@@ -14,10 +14,12 @@ namespace sharkexe2
         public Window window;
         public Image imageBox;
 
-        public Boolean debug = false;
         public Boolean pauseObj = false;
         public Boolean deleteObj = false;
         public Boolean huntedObj = false;
+
+        public Boolean debug = false;
+        public Boolean disableAnim = false;
 
         public Position objPosition;
         public Position toPosition;
@@ -41,6 +43,7 @@ namespace sharkexe2
             this.imageBox.MouseRightButtonUp += (s, e) => {
                 deleteObj = true;
             };
+
         }
 
         public void delete()
@@ -48,10 +51,10 @@ namespace sharkexe2
             this.window.Close();
         }
 
-        public void moveTowardsPosition(Position to)
+        public void moveTowardsPosition(Position to, bool facePosistion = true)
         {
             toPosition = to;
-            objRotation.faceTowardsPosition(objPosition, to);
+            if (facePosistion) objRotation.faceTowardsPosition(objPosition, to);
 
             bool decX = objPosition.nearByPositionX(to, objSpeed.getDecerlationBubble());
             bool decY = objPosition.nearByPositionY(to, objSpeed.getDecerlationBubble());
@@ -85,6 +88,8 @@ namespace sharkexe2
 
         private void manageImage()
         {
+            if (disableAnim) return;
+
             if (!objPosition.nearByPosition(toPosition, window.Width / 3))
             {
                 objOffset.adjustOffset(objRotation.currentRotation, (int) window.Width);

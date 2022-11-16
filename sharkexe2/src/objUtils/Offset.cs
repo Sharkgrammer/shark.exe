@@ -12,6 +12,12 @@ namespace sharkexe2.src.util
 
         public int Radius { get; set; }
 
+        public Offset()
+        {
+            this.X = 0;
+            this.Y = 0;
+            this.Radius = 0;
+        }
         public Offset(int x, int y, int radius)
         {
             this.X = x;

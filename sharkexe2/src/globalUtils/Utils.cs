@@ -71,16 +71,31 @@ namespace sharkexe2.src.util
             }
         }
 
-        public static void createNewShark(String name = "shark")
+        private static FishWindow createFishWindow()
         {
             FishWindow window = new FishWindow();
             window.Show();
+
+            return window;
+        }
+
+        public static void createNewShark(String name = "shark")
+        {
+            FishWindow window = createFishWindow();
 
             Shark shark = new Shark(window, window.imgMain, name);
             shark.debug = false;
 
             Utils.addNewObj(shark, app);
-           
+        }
+
+        public static void createNewCoral()
+        {
+            FishWindow window = createFishWindow();
+
+            Coral coral = new Coral(window, window.imgMain);
+
+            Utils.addNewObj(coral, app);
         }
     }
 }
