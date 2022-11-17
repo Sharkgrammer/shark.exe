@@ -43,10 +43,9 @@ namespace sharkexe2.src.globalUtils
             animObj.runActions();
             Utils.runMethodInApp(animObj.update);
             
-
             if (animObj.deleteObj)
             {
-                Utils.objList.Remove(this);
+                Utils.removeObj(this);
                 Utils.runMethodInApp(this.close);
             }
         }

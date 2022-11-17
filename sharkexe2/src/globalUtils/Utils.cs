@@ -12,25 +12,34 @@ namespace sharkexe2.src.util
         private static readonly int tickSpeed = 10;
         
         public static Random random = new Random();
-        public static List<objThread> objList = new List<objThread>();
+        private static List<objThread> objList = new List<objThread>();
         public static App app { get; set; }
         public static Timer brainTimer { get; set; }
 
-        private static int maxBubbles = 7;
-        private static int bubblesFrames = 30;
+        private static int bubblesFrames = 70;
         private static int bubblesCounter = 0;
-        private static int maxCoral = 7;
 
         public static void startBrain()
         {
-            int counter = 0;
 
-            while (counter++ <= 2)
+            for (int x = 0; x < 2; x++)
             {
                 int rand = Utils.random.Next(0, 2);
 
                 createNewShark(rand == 0 ? "shark" : "shark");
             }
+
+            for (int x = 0; x < 10; x++)
+            {
+                createNewGoldfish();
+            }
+
+            for (int x = 0; x < 10; x++)
+            {
+                createNewCoral();
+            }
+
+            createNewBubble();
 
             brainTimer = new Timer(tickSpeed * 10);
             brainTimer.Elapsed += brain_thread;
@@ -46,57 +55,42 @@ namespace sharkexe2.src.util
                 brainTimer.Stop();
             }
 
-            // Bubble code
-            var bubbleCount = 0;
-            try
-            {
-                bubbleCount = (from obj in objList where obj.animObj.GetType() == typeof(Bubble) select obj).Count();
-            } 
-            catch (Exception)
-            {
-                // Another thread modified objList whilst Linq was running
-                bubbleCount = maxBubbles;
+            // Bubble code -> Generate bubble every bubblesFrame tick
+            if (bubblesCounter >= bubblesFrames){
+                bubblesCounter = 0;
+                runMethodInApp(createNewBubble);
             }
-
-            if (bubbleCount < maxBubbles)
+            else
             {
-                if (bubblesCounter >= bubblesFrames){
-                    bubblesCounter = 0;
-                    runMethodInApp(createNewBubble);
-                }
-                else
-                {
-                    bubblesCounter++;
-                }
+                bubblesCounter++;
             }
-
-            // Coral code
-            var coralCount = 0;
-            try
-            {
-                coralCount = (from obj in objList where obj.animObj.GetType() == typeof(Coral) select obj).Count();
-            }
-            catch (Exception)
-            {
-                // Another thread modified objList whilst Linq was running
-                coralCount = maxCoral;
-            }
-
-            if (coralCount < maxCoral)
-            {
-                runMethodInApp(createNewCoral);
-            }
-
-            Console.WriteLine("ObjCount: " + objList.Count + " BubbleCount: " + bubbleCount + " CoralCount: " + coralCount);
         }
 
-            public static void addNewObj(AnimObj obj, App app)
+        public static void addNewObj(AnimObj obj, App app)
         {
             Timer timer = new Timer(tickSpeed);
 
             objThread objThread = new objThread(obj, timer, app);
 
             objList.Add(objThread);
+        }
+
+        public static void removeObj(objThread obj)
+        {
+            objList.Remove(obj);
+        }
+
+        public static List<AnimObj> getListOfType(Type type)
+        {
+            try
+            {
+                return objList.Where(t => t.animObj.GetType() == type).Select(t => t.animObj).ToList();
+            }
+            catch (Exception)
+            {
+                // Another thread modifed objList during this. Come back and try again later
+                return null;
+            }
         }
 
         public static int getObjIndex(AnimObj obj)
@@ -176,6 +170,7 @@ namespace sharkexe2.src.util
             FishWindow window = createFishWindow();
 
             Coral coral = new Coral(window, window.imgMain);
+            coral.debug = false;
 
             addNewObj(coral, app);
         }
@@ -185,8 +180,19 @@ namespace sharkexe2.src.util
             FishWindow window = createFishWindow();
 
             Bubble bubble = new Bubble(window, window.imgMain);
+            bubble.debug = false;
 
             addNewObj(bubble, app);
+        }
+
+        public static void createNewGoldfish()
+        {
+            FishWindow window = createFishWindow();
+
+            Goldfish fish = new Goldfish(window, window.imgMain);
+            fish.debug = false;
+
+            addNewObj(fish, app);
         }
     }
 }

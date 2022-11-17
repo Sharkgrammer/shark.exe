@@ -19,7 +19,7 @@ namespace sharkexe2
             Mouse.OverrideCursor = Cursors.Hand;
         }
 
-        public void paintCursorPoint(Offset points)
+        public void paintCursorPoint(Offset points, AnimObj obj)
         {
             this.Background = Brushes.Gray;
             //this.AllowsTransparency = false;
@@ -28,16 +28,17 @@ namespace sharkexe2
 
 
             TextBlock textWidth = new TextBlock();
-            textWidth.Text = "<-" + this.Width + "->" ;
-            textWidth.FontSize = 18;
+            textWidth.Text = " (" + Utils.getObjIndex(obj) + ") <"+ this.Width + ">" ;
+            textWidth.FontSize = this.Width / 5.5;
 
             canvas.Children.Add(textWidth);
             Canvas.SetLeft(textWidth, (this.Width / 4) - 10);
             Canvas.SetTop(textWidth, 0);
 
             TextBlock textHeight = new TextBlock();
-            textHeight.Text = "<-" + this.Height + "->";
-            textHeight.FontSize = 18;
+            textHeight.Text = " (" + Utils.getObjIndex(obj) + ") <" + this.Height + ">";
+
+            textHeight.FontSize = this.Height / 5.5;
 
             RotateTransform rotateText = new RotateTransform(90);
             textHeight.RenderTransformOrigin = new Point(0.3, 0.3);

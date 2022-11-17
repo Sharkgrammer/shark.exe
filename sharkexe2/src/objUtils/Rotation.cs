@@ -47,6 +47,10 @@ namespace sharkexe2.src.util
             double y = to.Y - current.Y;
 
             toRotation = (Math.Atan(y / x) * 180) / Math.PI;
+            
+            if (Math.Abs(currentRotation + toRotation) < 5){
+                currentRotation = toRotation;
+            }
         }
 
         private void rotate()

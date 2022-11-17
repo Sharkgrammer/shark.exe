@@ -1,0 +1,15 @@
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Release\sharkexe2.exe.config
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Release\sharkexe2.exe
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\bin\Release\sharkexe2.pdb
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.csproj.AssemblyReference.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.csproj.SuggestedBindingRedirects.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\FishWindow.baml
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\FishWindow.g.cs
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\App.g.cs
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2_MarkupCompile.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.g.resources
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.Properties.Resources.resources
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.csproj.GenerateResource.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.csproj.CoreCompileInputs.cache
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.exe
+C:\Users\Admin\source\repos\sharkexe2\sharkexe2\obj\Release\sharkexe2.pdb

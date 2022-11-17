@@ -163,7 +163,7 @@ namespace sharkexe2
 
             Console.WriteLine();
 
-            ((FishWindow) window).paintCursorPoint(objOffset);
+            ((FishWindow) window).paintCursorPoint(objOffset, this);
         }
 
         public virtual String childDebug()

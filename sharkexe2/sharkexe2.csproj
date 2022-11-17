@@ -62,6 +62,7 @@
     <Compile Include="src\Bubble.cs" />
     <Compile Include="src\globalUtils\objThread.cs" />
     <Compile Include="src\Coral.cs" />
+    <Compile Include="src\Goldfish.cs" />
     <Compile Include="src\Shark.cs" />
     <Compile Include="src\objUtils\Offset.cs" />
     <Compile Include="src\objUtils\Position.cs" />
