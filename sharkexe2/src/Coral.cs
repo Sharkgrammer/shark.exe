@@ -18,7 +18,7 @@ namespace sharkexe2
             imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/coral0" + imgNumber + ".png"));
             this.disableAnim = true;
 
-            int size = 10 * Utils.random.Next(5, 15);
+            int size = Utils.random.Next(50, 151);
             window.Width = size;
             window.Height = size;
             imageBox.Width = size;
@@ -28,12 +28,7 @@ namespace sharkexe2
             objPosition = new Position(objOffset, true, true);
             objRotation = new Rotation(0);
 
-            double speed = Utils.random.NextDouble();
-
-            if (speed > 0.5)
-            {
-                speed = 0.5;
-            }
+            double speed = Utils.random.Next(1, 5) * 0.1;
 
             objSpeed = new SpeedUtils(speed);
             toPosition = objPosition;

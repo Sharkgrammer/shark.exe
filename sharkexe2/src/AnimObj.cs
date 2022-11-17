@@ -46,11 +46,6 @@ namespace sharkexe2
 
         }
 
-        public void delete()
-        {
-            this.window.Close();
-        }
-
         public void moveTowardsPosition(Position to, bool facePosistion = true)
         {
             toPosition = to;

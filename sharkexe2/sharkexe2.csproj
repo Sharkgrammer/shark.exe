@@ -59,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="src\AnimObj.cs" />
+    <Compile Include="src\Bubble.cs" />
     <Compile Include="src\globalUtils\objThread.cs" />
     <Compile Include="src\Coral.cs" />
     <Compile Include="src\Shark.cs" />

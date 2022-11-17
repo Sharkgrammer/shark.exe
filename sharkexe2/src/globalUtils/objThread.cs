@@ -33,7 +33,7 @@ namespace sharkexe2.src.globalUtils
         public void close()
         {
             timer.Stop();
-            animObj.delete();
+            animObj.window.Close();
         }
 
         public void timer_thread(object sender, ElapsedEventArgs e)
@@ -41,13 +41,13 @@ namespace sharkexe2.src.globalUtils
             if (animObj.pauseObj) return;
 
             animObj.runActions();
-            app.Dispatcher.BeginInvoke(new Action(animObj.update));
+            Utils.runMethodInApp(animObj.update);
             
 
             if (animObj.deleteObj)
             {
                 Utils.objList.Remove(this);
-                app.Dispatcher.BeginInvoke(new Action(this.close));
+                Utils.runMethodInApp(this.close);
             }
         }
 

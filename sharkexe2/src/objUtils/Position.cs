@@ -11,13 +11,13 @@ namespace sharkexe2.src.util
 
         public double Y { get; set; }
 
-        public Boolean mainScreenOnly = false;
+        public Boolean mainScreenOnly = true;
 
-        public Position(Offset offset = null, bool random = true, bool atTaskbar = false)
+        public Position(Offset offset = null, bool random = true, bool atTaskbar = false, bool underTaskbar = false)
         {
             if (random && offset != null)
             {
-                getRandomPosition(offset, atTaskbar);
+                getRandomPosition(offset, atTaskbar, underTaskbar);
             }
             else
             {
@@ -38,12 +38,18 @@ namespace sharkexe2.src.util
             Y = point.Y;
         }
 
+        public void setPosition(Position pos)
+        {
+            X = pos.X;
+            Y = pos.Y;
+        }
+
         public Position getOffsetPosition(Offset offset)
         {
             return new Position(X + offset.X, Y + offset.Y);
         }
 
-        private void getRandomPosition(Offset offset, bool atTaskbar)
+        private void getRandomPosition(Offset offset, bool atTaskbar = false, bool underTaskbar = false)
         {
             if (mainScreenOnly)
             {
@@ -54,13 +60,31 @@ namespace sharkexe2.src.util
                 X = Utils.random.Next(0, (int)SystemParameters.VirtualScreenWidth - offset.X);
             }
 
-            if (atTaskbar)
+            if (underTaskbar)
+            {
+                Y = SystemParameters.VirtualScreenHeight;
+            }
+            else if (atTaskbar)
             {
                 Y = SystemParameters.VirtualScreenHeight - offset.Y;
             }
             else
             {
                 Y = Utils.random.Next(0, (int)SystemParameters.VirtualScreenHeight - offset.Y);
+            }
+        }
+
+        public void getRandomPositionNearby(int nearby = 10, Boolean up = false)
+        {
+            X += Utils.random.Next(nearby + 1) * (Utils.random.Next(2) == 1 ? -1 : 1);
+
+            if (up)
+            {
+                Y -= Utils.random.Next(nearby + 1) * 2;
+            }
+            else
+            {
+                Y += Utils.random.Next(nearby + 1) * (Utils.random.Next(2) == 1 ? -1 : 1);
             }
         }
 
@@ -105,7 +129,12 @@ namespace sharkexe2.src.util
 
         public Boolean nearByPositionY(Position p, double bubble, double bubbleAdjustment = 0)
         {
-            return Math.Abs(Y - p.Y) <= bubble + bubbleAdjustment;
+            return nearByY(p.Y, bubble, bubbleAdjustment);
+        }
+
+        public Boolean nearByY(double y, double bubble, double bubbleAdjustment = 0)
+        {
+            return Math.Abs(Y - y) <= bubble + bubbleAdjustment;
         }
 
         public String toString()

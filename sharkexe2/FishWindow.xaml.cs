@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -15,6 +16,7 @@ namespace sharkexe2
         public FishWindow()
         {
             InitializeComponent();
+            Mouse.OverrideCursor = Cursors.Hand;
         }
 
         public void paintCursorPoint(Offset points)

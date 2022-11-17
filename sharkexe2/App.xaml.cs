@@ -11,24 +11,8 @@ namespace sharkexe2
        
         public App()
         {
-            int counter = 0;
-
             Utils.app = this;
-
-            while(counter++ <= 0)
-            {
-                int rand = Utils.random.Next(0, 2);
-
-                Utils.createNewShark(rand == 0 ? "shark" : "blahaj");
-            }
-
-            counter = 0;
-
-            while (counter++ <= 20)
-            {
-                Utils.createNewCoral();
-            }
-
+            Utils.startBrain();
         }
 
     }
