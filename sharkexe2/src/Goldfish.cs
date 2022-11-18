@@ -24,6 +24,7 @@ namespace sharkexe2
         public Boolean inSchool = false;
         public Boolean schoolLeader = false;
         public int schoolPos = 0;
+        public Boolean fleeing = false;
 
         public Goldfish(Window window, Image imageBox) : base(window, imageBox)
         {
@@ -59,6 +60,13 @@ namespace sharkexe2
 
         public override void runActions()
         {
+            fleeing = scatterIfSharksNear();
+
+            if (fleeing)
+            {
+                return;
+            }
+
             switch (actionMode)
             {
                 case 0:
@@ -160,6 +168,27 @@ namespace sharkexe2
             }
         }
 
+        public Boolean scatterIfSharksNear()
+        {
+            List<Shark> sharks = sharksNearby();
+
+            //Console.WriteLine(sharks.Count);
+
+            if (sharks.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                Position tempPos = objPosition.getFleePosition(sharks[0].objPosition, size * 2);
+
+                // objRotation.forceFaceTowardsPosition(objPosition, tempPos, true);
+
+                this.moveTowardsPosition(tempPos);
+
+                return true;
+            }
+        }
 
         private Boolean schoolLeaderExists()
         {
@@ -196,6 +225,11 @@ namespace sharkexe2
             return Utils.getListOfType(typeof(Goldfish)).Select(g => (Goldfish)g).Where(g => g.inSchool).ToList();
         }
 
+        private List<Shark> sharksNearby()
+        {
+            return Utils.getListOfType(typeof(Shark)).Select(s => (Shark)s).Where(s => objPosition.nearByPosition(s.objPosition, size * 2)).ToList();
+        }
+
         public override void animateObj()
         {
             if (objSpeed.currentVelocity.currentSpeed() <= objSpeed.decerlation * 3)
@@ -214,7 +248,7 @@ namespace sharkexe2
 
         public override String childDebug()
         {
-            return "Goldfish Idx:" + Utils.getObjIndex(this) + " ActionMode:" + actionMode + " School:" + inSchool + " Leader:" + schoolLeader + " SchoolIdx:" + schoolPos;
+            return "Goldfish Idx:" + Utils.getObjIndex(this) + " ActionMode:" + actionMode + " School:" + inSchool + " Leader:" + schoolLeader + " SchoolIdx:" + schoolPos + " Fleeing:" + fleeing;
         }
     }
 }

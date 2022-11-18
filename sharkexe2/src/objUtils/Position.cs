@@ -49,6 +49,35 @@ namespace sharkexe2.src.util
             return new Position(X + offset.X, Y + offset.Y);
         }
 
+        public void calcPosition(Position to, Velocity velocity, int bubble)
+        {
+            // X position
+            if (!nearByPositionX(to, bubble))
+            {
+                if (X > to.X)
+                {
+                    X -= velocity.X;
+                }
+                else
+                {
+                    X += velocity.X;
+                }
+            }
+
+            // Y position
+            if (!nearByPositionY(to, bubble))
+            {
+                if (Y > to.Y)
+                {
+                    Y -= velocity.Y;
+                }
+                else
+                {
+                    Y += velocity.Y;
+                }
+            }
+        }
+
         private void getRandomPosition(Offset offset, bool atTaskbar = false, bool underTaskbar = false)
         {
             if (mainScreenOnly)
@@ -88,33 +117,30 @@ namespace sharkexe2.src.util
             }
         }
 
-        public void calcPosition(Position to, Velocity velocity, int bubble)
+        public Position getFleePosition(Position to, int dist = 200)
         {
-            // X position
-            if (!nearByPositionX(to, bubble))
+            Position fleePos = new Position(); 
+
+            if (X > to.X)
             {
-                if (X > to.X)
-                {
-                    X -= velocity.X;
-                }
-                else
-                {
-                    X += velocity.X;
-                }
+                fleePos.X = X + dist;
+            }
+            else
+            {
+                fleePos.X = X - dist;
             }
 
-            // Y position
-            if (!nearByPositionY(to, bubble))
+
+            if (Y > to.Y)
             {
-                if (Y > to.Y)
-                {
-                    Y -= velocity.Y;
-                }
-                else
-                {
-                    Y += velocity.Y;
-                }
+                fleePos.Y = Y + dist;
             }
+            else
+            {
+                fleePos.Y = Y - dist;
+            }
+
+            return fleePos;
         }
 
         public Boolean nearByPosition(Position p, double bubble, double bubbleAdjustment = 0)

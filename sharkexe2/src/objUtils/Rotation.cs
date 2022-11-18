@@ -29,9 +29,9 @@ namespace sharkexe2.src.util
             rotate();
         }
 
-        public void forceFaceTowardsPosition(Position current, Position to)
+        public void forceFaceTowardsPosition(Position current, Position to, Boolean byPass = false)
         {
-            if (current.nearByPosition(to, 10))
+            if (!byPass && current.nearByPosition(to, 10))
             {
                 return;
             }

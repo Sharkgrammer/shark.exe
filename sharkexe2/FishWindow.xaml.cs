@@ -64,7 +64,7 @@ namespace sharkexe2
         {
             this.Topmost = true;
             this.Activate();
-            this.Focus();
+            //this.Focus();
         }
 
     }

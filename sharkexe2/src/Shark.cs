@@ -82,7 +82,7 @@ namespace sharkexe2
 
         public override void runActions()
         {
-            //actionMode = 1;
+            //actionMode = 0;
             switch (actionMode)
             {
                 case 0:

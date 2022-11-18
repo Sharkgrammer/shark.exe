@@ -46,9 +46,9 @@ namespace sharkexe2
 
         }
 
-        public void moveTowardsPosition(Position to, bool facePosistion = true)
+        public void moveTowardsPosition(Position to, bool facePosistion = true, bool tempPos = false)
         {
-            toPosition = to;
+            if (!tempPos) toPosition = to;
             if (facePosistion) objRotation.faceTowardsPosition(objPosition, to);
 
             bool decX = objPosition.nearByPositionX(to, objSpeed.getDecerlationBubble());
@@ -153,8 +153,8 @@ namespace sharkexe2
             Console.WriteLine();
             Console.WriteLine(this.ToString() + "<" + this.GetHashCode() + "> -> " + imageBox.Source);
             Console.WriteLine(objOffset.toString());
-            Console.WriteLine(objPosition.toString());
-            Console.WriteLine(toPosition.toString());
+            Console.WriteLine("obj" + objPosition.toString());
+            Console.WriteLine("to" + toPosition.toString());
             Console.WriteLine(objRotation.toString());
             Console.WriteLine(objSpeed.toString());
             

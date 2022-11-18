@@ -22,19 +22,19 @@ namespace sharkexe2.src.util
         public static void startBrain()
         {
 
-            for (int x = 0; x < 2; x++)
+            for (int x = 0; x < 3; x++)
             {
                 int rand = Utils.random.Next(0, 2);
 
                 createNewShark(rand == 0 ? "shark" : "shark");
             }
 
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < 5; x++)
             {
                 createNewGoldfish();
             }
 
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < 4; x++)
             {
                 createNewCoral();
             }
