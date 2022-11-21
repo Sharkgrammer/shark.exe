@@ -2,8 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.Drawing;
 using System.Linq;
 using System.Timers;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace sharkexe2.src.util
 {
@@ -22,19 +26,19 @@ namespace sharkexe2.src.util
         public static void startBrain()
         {
 
-            for (int x = 0; x < 3; x++)
+            for (int x = 0; x < 1; x++)
             {
                 int rand = Utils.random.Next(0, 2);
 
                 createNewShark(rand == 0 ? "shark" : "shark");
             }
 
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 3; x++)
             {
                 createNewGoldfish();
             }
 
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < 2; x++)
             {
                 createNewCoral();
             }
@@ -145,6 +149,41 @@ namespace sharkexe2.src.util
         public static void runMethodInApp(Action method)
         {
             app.Dispatcher.BeginInvoke(new Action(method));
+        }
+
+        public static BitmapImage ChangeColor(Bitmap image, Color fromColor, Color toColor)
+        {
+            ImageAttributes attributes = new ImageAttributes();
+            attributes.SetRemapTable(new ColorMap[]
+            {
+                new ColorMap()
+                {
+                    OldColor = fromColor,
+                    NewColor = toColor,
+                }
+            }, ColorAdjustType.Bitmap);
+
+
+            using (Graphics g = Graphics.FromImage(image))
+            {
+                g.DrawImage(image, new Rectangle(Point.Empty, image.Size), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
+            }
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                image.Save(stream, ImageFormat.Png); // Was .Bmp, but this did not show a transparent background.
+
+                stream.Position = 0;
+                BitmapImage result = new BitmapImage();
+                result.BeginInit();
+                // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
+                // Force the bitmap to load right now so we can dispose the stream.
+                result.CacheOption = BitmapCacheOption.OnLoad;
+                result.StreamSource = stream;
+                result.EndInit();
+                result.Freeze();
+                return result;
+            }
         }
 
         private static FishWindow createFishWindow()

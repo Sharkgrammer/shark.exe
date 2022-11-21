@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Drawing;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Rotation = sharkexe2.src.util.Rotation;
+using Image = System.Windows.Controls.Image;
+using Point = System.Windows.Point;
+using Color = System.Drawing.Color;
 
 namespace sharkexe2
 {
@@ -26,6 +30,9 @@ namespace sharkexe2
         public int schoolPos = 0;
         public Boolean fleeing = false;
 
+        // We only have two frames at the moment
+        public ImageSource frame1, frame2;
+
         public Goldfish(Window window, Image imageBox) : base(window, imageBox)
         {
 
@@ -44,7 +51,9 @@ namespace sharkexe2
             imageBox.Width = size;
 
             imageBox.RenderTransformOrigin = new Point(0.5, 0.5);
-            imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/fish01.png"));
+            Color randomColor = Color.FromArgb(Utils.random.Next(256), Utils.random.Next(256), Utils.random.Next(256));
+            setImages(randomColor.ToArgb().ToString());
+            imageBox.Source = frame1;
 
             int maxSpeed = Utils.random.Next(2, 4);
             animateFrameLen = 20 - (maxSpeed * 2);
@@ -243,7 +252,20 @@ namespace sharkexe2
                 animatecounter = 0;
             }
 
-            imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/fish0" + animateMode + ".png"));
+            imageBox.Source = animateMode == 1 ? frame1 : frame2;
+        }
+
+        private void setImages(String toColor)
+        {
+            // From is the orange used by the default fish
+            Color from = ColorTranslator.FromHtml("#ffff9245");
+            Color to = ColorTranslator.FromHtml(toColor);
+
+            Bitmap b1 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish01.png");
+            Bitmap b2 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish02.png");
+
+            frame1 = Utils.ChangeColor(b1, from, to);
+            frame2 = Utils.ChangeColor(b2, from, to);
         }
 
         public override String childDebug()
