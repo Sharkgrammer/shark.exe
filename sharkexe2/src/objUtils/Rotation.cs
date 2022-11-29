@@ -41,6 +41,12 @@ namespace sharkexe2.src.util
             currentRotation = toRotation;
         }
 
+        public void forceRotation(double rotation)
+        {
+            toRotation = rotation;
+            currentRotation = toRotation;
+        }
+
         private void calcToRotation(Position current, Position to)
         {
             double x = to.X - current.X;

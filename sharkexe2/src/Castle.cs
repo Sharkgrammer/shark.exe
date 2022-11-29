@@ -18,7 +18,7 @@ namespace sharkexe2
             imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/castle0" + imgNumber + ".png"));
             this.disableAnim = true;
 
-            setWindowSize(Utils.random.Next(50, 151));
+            setWindowSize(Utils.random.Next(80, 201));
 
             // Setup the obj varaibles
             objOffset = new Offset(0, (int) window.Height, 0);

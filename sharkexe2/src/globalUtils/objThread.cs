@@ -45,6 +45,14 @@ namespace sharkexe2.src.globalUtils
             
             if (animObj.deleteObj)
             {
+                // Type check in a switch doesn't work :(
+                Type t = animObj.GetType();
+
+                if (t == typeof(Goldfish) || t == typeof(Shark))
+                {
+                    Utils.createNewBone(animObj.objPosition.getMiddlePosition(animObj.size));
+                }
+
                 Utils.removeObj(this);
                 Utils.runMethodInApp(this.close);
             }

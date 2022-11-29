@@ -103,13 +103,17 @@ namespace sharkexe2.src.util
             }
         }
 
-        public void getRandomPositionNearby(int nearby = 10, Boolean up = false)
+        public void getRandomPositionNearby(int nearby = 10, Boolean up = false, Boolean down = false)
         {
             X += Utils.random.Next(nearby + 1) * (Utils.random.Next(2) == 1 ? -1 : 1);
 
             if (up)
             {
                 Y -= Utils.random.Next(nearby + 1) * 2;
+            }
+            else if (down)
+            {
+                Y += Utils.random.Next(nearby + 1) * 2;
             }
             else
             {
@@ -141,6 +145,15 @@ namespace sharkexe2.src.util
             }
 
             return fleePos;
+        }
+
+        public Position getMiddlePosition(int size)
+        {
+            Position middlePos = new Position();
+            middlePos.X = X + size / 2;
+            middlePos.Y = Y + size / 2;
+
+            return middlePos;
         }
 
         public Boolean nearByPosition(Position p, double bubble, double bubbleAdjustment = 0)

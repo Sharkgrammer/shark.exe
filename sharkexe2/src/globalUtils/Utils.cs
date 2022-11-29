@@ -1,7 +1,6 @@
 ﻿using sharkexe2.src.globalUtils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Linq;
@@ -9,7 +8,6 @@ using System.Timers;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Globalization;
-using System.Windows;
 using Point = System.Drawing.Point;
 
 namespace sharkexe2.src.util
@@ -29,22 +27,22 @@ namespace sharkexe2.src.util
         public static void startBrain()
         {
 
-            for (int x = 0; x < random.Next(0, 4); x++)
+            for (int x = 0; x < random.Next(1, 4); x++)
             {
                 createNewShark();
             }
 
-            for (int x = 0; x < random.Next(0, 6); x++)
+            for (int x = 0; x < random.Next(1, 6); x++)
             {
                 createNewGoldfish();
             }
 
-            for (int x = 0; x < random.Next(0, 10); x++)
+            for (int x = 0; x < random.Next(1, 10); x++)
             {
                 createNewCoral();
             }
 
-            for (int x = 0; x < random.Next(0, 3); x++)
+            for (int x = 0; x < random.Next(1, 3); x++)
             {
                 createNewCastle();
             }
@@ -66,13 +64,9 @@ namespace sharkexe2.src.util
             }
 
             // Bubble code -> Generate bubble every bubblesFrame tick
-            if (bubblesCounter >= bubblesFrames){
+            if (bubblesCounter++ >= bubblesFrames){
                 bubblesCounter = 0;
                 runMethodInApp(createNewBubble);
-            }
-            else
-            {
-                bubblesCounter++;
             }
         }
 
@@ -152,7 +146,7 @@ namespace sharkexe2.src.util
             }
         }
 
-        public static void runMethodInApp(Action method)
+        public static void runMethodInApp(Action method, params object[] args)
         {
             app.Dispatcher.BeginInvoke(new Action(method));
         }
@@ -309,6 +303,27 @@ namespace sharkexe2.src.util
             castle.debug = false;
 
             addNewObj(castle, app);
+        }
+
+        public static void createNewBone()
+        {
+            createNewBone(new Position(100, 100));
+        }
+
+        // Since this gets called by other threads but also needs to pass params, it needs to be coupled tightly
+        public static void createNewBone(Position start)
+        {
+
+            app.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                FishWindow window = createFishWindow();
+
+                Bone bone = new Bone(window, window.imgMain, start);
+                bone.debug = false;
+
+                addNewObj(bone, app);
+            }));
+
         }
 
     }

@@ -27,6 +27,8 @@ namespace sharkexe2
         public Offset objOffset;
         public SpeedUtils objSpeed;
 
+        public int size;
+
         public Boolean flipCorrectionLeft = false;
         public Boolean flipCorrectionRight = false;
         public int flipCorrectionCounter = 0;
@@ -70,6 +72,8 @@ namespace sharkexe2
             window.Width = size;
             window.Height = size;
             imageBox.Width = size;
+
+            this.size = size;
         }
 
         public void update()
