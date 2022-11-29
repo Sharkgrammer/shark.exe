@@ -8,14 +8,14 @@ using Rotation = sharkexe2.src.util.Rotation;
 
 namespace sharkexe2
 {
-    public class Coral : AnimObj
+    public class Castle : AnimObj
     {
 
-        public Coral(Window window, Image imageBox) : base(window, imageBox)
+        public Castle(Window window, Image imageBox) : base(window, imageBox)
         {
             imageBox.RenderTransformOrigin = new Point(0.5, 0.5);
             int imgNumber = Utils.random.Next(1, 3);
-            imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/coral0" + imgNumber + ".png"));
+            imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/castle0" + imgNumber + ".png"));
             this.disableAnim = true;
 
             setWindowSize(Utils.random.Next(50, 151));
@@ -25,7 +25,7 @@ namespace sharkexe2
             objPosition = new Position(objOffset, true, true);
             objRotation = new Rotation(0);
 
-            double speed = Utils.random.Next(1, 5) * 0.1;
+            double speed = Utils.random.Next(1, 5) * 0.01;
 
             objSpeed = new SpeedUtils(speed);
             toPosition = objPosition;
@@ -40,21 +40,16 @@ namespace sharkexe2
         {
             if (objPosition.nearByPosition(toPosition, 10))
             {
-                int count = Utils.random.Next(0, 20);
-
-                if (count > 18)
-                {
-                    toPosition = new Position(objOffset, true, true);
-                }
+                // Castle moves so slowly that theres no real point in forcing it to stay still
+                toPosition = new Position(objOffset, true, true);
             }
 
             this.moveTowardsPosition(toPosition);
         }
 
-
         public override String childDebug()
         {
-            return "Coral Idx:" + Utils.getObjIndex(this);
+            return "Castle Idx:" + Utils.getObjIndex(this);
         }
     }
 }

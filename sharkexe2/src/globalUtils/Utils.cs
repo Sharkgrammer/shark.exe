@@ -29,19 +29,24 @@ namespace sharkexe2.src.util
         public static void startBrain()
         {
 
-            for (int x = 0; x < 2; x++)
+            for (int x = 0; x < random.Next(0, 4); x++)
             {
                 createNewShark();
             }
 
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < random.Next(0, 6); x++)
             {
                 createNewGoldfish();
             }
 
-            for (int x = 0; x < 2; x++)
+            for (int x = 0; x < random.Next(0, 10); x++)
             {
                 createNewCoral();
+            }
+
+            for (int x = 0; x < random.Next(0, 3); x++)
+            {
+                createNewCastle();
             }
 
             createNewBubble();
@@ -295,5 +300,16 @@ namespace sharkexe2.src.util
 
             addNewObj(fish, app);
         }
+
+        public static void createNewCastle()
+        {
+            FishWindow window = createFishWindow();
+
+            Castle castle = new Castle(window, window.imgMain);
+            castle.debug = false;
+
+            addNewObj(castle, app);
+        }
+
     }
 }

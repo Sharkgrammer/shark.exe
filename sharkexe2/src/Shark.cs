@@ -52,6 +52,8 @@ namespace sharkexe2
                     break;
             }
 
+            setWindowSize(size);
+
             int offset1, offset2, offset3;
 
             offset1 = size - 25;
@@ -59,10 +61,6 @@ namespace sharkexe2
             offset3 = offset1 / 2;
 
             objOffset = new Offset(offset1, offset2, offset3);
-
-            window.Width = size;
-            window.Height = size;
-            imageBox.Width = size;
 
             this.imageName = imageName;
             imageBox.RenderTransformOrigin = new Point(0.5, 0.5);

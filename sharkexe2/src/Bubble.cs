@@ -20,10 +20,7 @@ namespace sharkexe2
             imageBox.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "res/bubble01.png"));
             this.disableAnim = true;
 
-            int size = Utils.random.Next(10, 61);
-            window.Width = size;
-            window.Height = size;
-            imageBox.Width = size;
+            setWindowSize(Utils.random.Next(10, 61));
 
             // Setup the obj varaibles
             objOffset = new Offset(0, (int) window.Height, 0);

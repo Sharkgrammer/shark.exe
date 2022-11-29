@@ -65,6 +65,13 @@ namespace sharkexe2
             return new Position(cursorPoint.X - objOffset.X, cursorPoint.Y - objOffset.Y);
         }
 
+        public void setWindowSize(int size)
+        {
+            window.Width = size;
+            window.Height = size;
+            imageBox.Width = size;
+        }
+
         public void update()
         {
             if (this.imageBox.Visibility == Visibility.Hidden)

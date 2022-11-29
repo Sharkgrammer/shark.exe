@@ -3,15 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Drawing;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Rotation = sharkexe2.src.util.Rotation;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 using Color = System.Drawing.Color;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace sharkexe2
 {
@@ -40,7 +37,8 @@ namespace sharkexe2
         public Goldfish(Window window, Image imageBox) : base(window, imageBox)
         {
 
-            this.size = Utils.random.Next(50, 120);            
+            this.size = Utils.random.Next(50, 120);
+            setWindowSize(size);
 
             int offset1, offset2, offset3;
 
@@ -297,7 +295,8 @@ namespace sharkexe2
                 {
                     count++;
 
-                    if (count >= allColours.Count() - 1)
+                    // Theres only 7 rainbow colours, the first 7 in allColours
+                    if (count >= 7)
                     {
                         count = -1;
                     }
