@@ -11,6 +11,7 @@ using Rotation = sharkexe2.src.util.Rotation;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 using Color = System.Drawing.Color;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace sharkexe2
 {
@@ -30,8 +31,11 @@ namespace sharkexe2
         public int schoolPos = 0;
         public Boolean fleeing = false;
 
-        // We only have two frames at the moment
-        public ImageSource frame1, frame2;
+        public GoldfishFrame mainFrames;
+        private String[] allColours = { "#FF0000", "#FFA500", "#FFFF00", "#008000", "#0000FF", "#4B0082", "#EE82EE" ,"#FF9245" };
+
+        private int rainbowCurrent = 0;
+        private List<GoldfishFrame> allRainbowColours = new List<GoldfishFrame>();
 
         public Goldfish(Window window, Image imageBox) : base(window, imageBox)
         {
@@ -51,9 +55,18 @@ namespace sharkexe2
             imageBox.Width = size;
 
             imageBox.RenderTransformOrigin = new Point(0.5, 0.5);
-            Color randomColor = Color.FromArgb(Utils.random.Next(256), Utils.random.Next(256), Utils.random.Next(256));
-            setImages(randomColor.ToArgb().ToString());
-            imageBox.Source = frame1;
+
+            if (Utils.random.Next(10) >= 9)
+            {
+                setupRainbowList();
+                mainFrames = allRainbowColours[rainbowCurrent];
+            }
+            else
+            {
+                mainFrames = new GoldfishFrame(allColours[Utils.random.Next(0, allColours.Count())]);
+            }
+
+            imageBox.Source = mainFrames.f1;
 
             int maxSpeed = Utils.random.Next(2, 4);
             animateFrameLen = 20 - (maxSpeed * 2);
@@ -250,27 +263,84 @@ namespace sharkexe2
             {
                 animateMode = animateMode == 1 ? animateMode = 2 : animateMode = 1;
                 animatecounter = 0;
+
+                if (allRainbowColours.Count > 0)
+                {
+                    if (rainbowCurrent < allRainbowColours.Count() - 1)
+                    {
+                        rainbowCurrent++;
+                    }
+                    else
+                    {
+                        rainbowCurrent = 0;
+                    }
+
+                    mainFrames = allRainbowColours[rainbowCurrent];
+                }
             }
 
-            imageBox.Source = animateMode == 1 ? frame1 : frame2;
+            imageBox.Source = animateMode == 1 ? mainFrames.f1 : mainFrames.f2;
         }
 
-        private void setImages(String toColor)
+        private void setupRainbowList()
         {
-            // From is the orange used by the default fish
-            Color from = ColorTranslator.FromHtml("#ffff9245");
-            Color to = ColorTranslator.FromHtml(toColor);
+            String tempCol = allColours[0];
+            int count = 0, jump = Utils.random.Next(20, 41);
 
-            Bitmap b1 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish01.png");
-            Bitmap b2 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish02.png");
+            allRainbowColours.Add(new GoldfishFrame(tempCol));
 
-            frame1 = Utils.ChangeColor(b1, from, to);
-            frame2 = Utils.ChangeColor(b2, from, to);
+            do
+            {
+                tempCol = Utils.fadeToColour(tempCol, allColours[count + 1], jump);
+
+                if (tempCol == allColours[count + 1])
+                {
+                    count++;
+
+                    if (count >= allColours.Count() - 1)
+                    {
+                        count = -1;
+                    }
+                }
+
+                allRainbowColours.Add(new GoldfishFrame(tempCol));
+
+            } while (tempCol != allColours[0]);
+
+            rainbowCurrent = Utils.random.Next(0, allRainbowColours.Count() - 2);
         }
 
         public override String childDebug()
         {
             return "Goldfish Idx:" + Utils.getObjIndex(this) + " ActionMode:" + actionMode + " School:" + inSchool + " Leader:" + schoolLeader + " SchoolIdx:" + schoolPos + " Fleeing:" + fleeing;
         }
+
+    }
+
+    public class GoldfishFrame
+    {
+        public ImageSource f1, f2;
+        public String colourName;
+
+        public GoldfishFrame(String name)
+        {
+            this.colourName = name;
+
+            setFrames();
+        }
+
+        private void setFrames()
+        {
+            // From is the grey used by the default fish
+            Color from = ColorTranslator.FromHtml("#ffc8c8c8");
+            Color to = ColorTranslator.FromHtml(this.colourName);
+
+            Bitmap b1 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish01.png");
+            Bitmap b2 = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "res/fish02.png");
+
+            this.f1 = Utils.ChangeColor(b1, from, to);
+            this.f2 = Utils.ChangeColor(b2, from, to);
+        }
+
     }
 }

@@ -8,6 +8,9 @@ using System.Linq;
 using System.Timers;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Globalization;
+using System.Windows;
+using Point = System.Drawing.Point;
 
 namespace sharkexe2.src.util
 {
@@ -26,14 +29,12 @@ namespace sharkexe2.src.util
         public static void startBrain()
         {
 
-            for (int x = 0; x < 1; x++)
+            for (int x = 0; x < 2; x++)
             {
-                int rand = Utils.random.Next(0, 2);
-
-                createNewShark(rand == 0 ? "shark" : "shark");
+                createNewShark();
             }
 
-            for (int x = 0; x < 3; x++)
+            for (int x = 0; x < 5; x++)
             {
                 createNewGoldfish();
             }
@@ -149,6 +150,67 @@ namespace sharkexe2.src.util
         public static void runMethodInApp(Action method)
         {
             app.Dispatcher.BeginInvoke(new Action(method));
+        }
+
+        public static String fadeToColour(String currentColour, String toColour, int fadeDist = 15)
+        {
+            int cr, cg, cb, tr, tg, tb;
+
+            cr = int.Parse(currentColour.Substring(1, 2), NumberStyles.AllowHexSpecifier);
+            cg = int.Parse(currentColour.Substring(3, 2), NumberStyles.AllowHexSpecifier);
+            cb = int.Parse(currentColour.Substring(5, 2), NumberStyles.AllowHexSpecifier);
+
+            tr = int.Parse(toColour.Substring(1, 2), NumberStyles.AllowHexSpecifier);
+            tg = int.Parse(toColour.Substring(3, 2), NumberStyles.AllowHexSpecifier);
+            tb = int.Parse(toColour.Substring(5, 2), NumberStyles.AllowHexSpecifier);
+
+            cr = fadeToColourHelper(cr, tr, fadeDist);
+            cg = fadeToColourHelper(cg, tg, fadeDist);
+            cb = fadeToColourHelper(cb, tb, fadeDist);
+            
+            String crStr = $"{cr:X}";
+            String cgStr = $"{cg:X}";
+            String cbStr = $"{cb:X}";
+
+            if (crStr.Length == 1) crStr = "0" + crStr;
+            if (cgStr.Length == 1) cgStr = "0" + cgStr;
+            if (cbStr.Length == 1) cbStr = "0" + cbStr;
+
+            // Return hex
+            return "#" + crStr + cgStr + cbStr;
+        }
+
+        private static int fadeToColourHelper(int current, int to, int fadeDist)
+        {
+
+            if (current < to)
+            {
+                current += fadeDist;
+
+                if (current > 255)
+                {
+                    current = 255;
+                } 
+                else if (current > to)
+                {
+                    current = to;
+                }
+            }
+            else
+            {
+                current -= fadeDist;
+
+                if (current < 0)
+                {
+                    current = 0;
+                } 
+                else if (current < to)
+                {
+                    current = to;
+                }
+            }
+
+            return current;
         }
 
         public static BitmapImage ChangeColor(Bitmap image, Color fromColor, Color toColor)
